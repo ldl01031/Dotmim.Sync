@@ -1,5 +1,6 @@
 ﻿using Dotmim.Sync.Extensions;
 using Dotmim.Sync.Serialization;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

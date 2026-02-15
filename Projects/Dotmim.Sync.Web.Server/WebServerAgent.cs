@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.Abstractions;
 using Dotmim.Sync.Batch;
 using Dotmim.Sync.Enumerations;
 using Dotmim.Sync.Extensions;

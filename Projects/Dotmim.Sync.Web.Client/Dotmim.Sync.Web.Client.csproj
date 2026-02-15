@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>$(TargetFrameworkNetStandard);$(TargetFrameworkNet6);$(TargetFrameworkNet8)</TargetFrameworks>
+		<TargetFrameworks>net10.0;net10.0-windows10.0.19041.0</TargetFrameworks>
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 
 		<Authors>Sébastien Pertus</Authors>
 		<Company>Microsoft</Company>
@@ -17,21 +18,9 @@
 		<NoWarn>$(NoWarn)</NoWarn>
 	</PropertyGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == '$(TargetFrameworkNet6)'  ">
-		<PackageReference Include="Microsoft.Extensions.Features" Version="6.0.0" />
-		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == '$(TargetFrameworkNet8)' ">
-		<PackageReference Include="Microsoft.Extensions.Features" Version="8.0.6" />
-		<PackageReference Include="Microsoft.Net.Http.Headers" Version="8.0.6" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == '$(TargetFrameworkNetStandard)' ">
-		<PackageReference Include="Microsoft.Extensions.Features" Version="6.0.0" />
-		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.8" />
-	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.Net.Http.Headers" Version="10.0.3" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
