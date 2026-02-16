@@ -7,21 +7,22 @@
     internal class SerializerInfo
     {
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SerializerInfo"/> class.
-        /// </summary>
-        public SerializerInfo()
-        {
-        }
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="SerializerInfo"/> class.
+        ///// </summary>
+        //public SerializerInfo() { }
+        ////public SerializerInfo()
+        ////{
+        ////}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SerializerInfo"/> class.
-        /// </summary>
-        public SerializerInfo(string serializerKey, int clientBatchSize)
-        {
-            this.SerializerKey = serializerKey;
-            this.ClientBatchSize = clientBatchSize;
-        }
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="SerializerInfo"/> class.
+        ///// </summary>
+        ////public SerializerInfo(string serializerKey, int clientBatchSize)
+        ////{
+        ////    this.SerializerKey = serializerKey;
+        ////    this.ClientBatchSize = clientBatchSize;
+        ////}
 
         /// <summary>
         /// Gets or sets the serializer key.

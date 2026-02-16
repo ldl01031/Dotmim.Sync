@@ -34,7 +34,7 @@ namespace Dotmim.Sync
         /// <summary>
         /// Initializes a new instance of the <see cref="SyncParameters"/> class.
         /// </summary>
-        public SyncParameters(params (string Name, object Value)[] parameters) => this.AddRange(parameters.Select(p => new SyncParameter(p.Name, p.Value)));
+        public SyncParameters(params (string Name, string Value)[] parameters) => this.AddRange(parameters.Select(p => new SyncParameter(p.Name, p.Value)));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SyncParameters"/> class.
@@ -44,7 +44,7 @@ namespace Dotmim.Sync
         /// <summary>
         /// Add a new sync parameter.
         /// </summary>
-        public void Add<T>(string name, T value) => this.Add(new SyncParameter(name, value));
+        public void Add<T>(string name, T value) => Add(new SyncParameter(name, Convert.ToString(value, CultureInfo.InvariantCulture)));
 
         /// <summary>
         /// Add a new sync parameter.

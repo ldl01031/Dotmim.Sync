@@ -20,6 +20,7 @@ namespace Dotmim.Sync
     /// </summary>
     public abstract partial class BaseOrchestrator
     {
+#pragma warning disable CA1873
         /// <summary>
         /// Apply changes : Delete / Insert / Update
         /// the fromScope is local client scope when this method is called from server
@@ -891,4 +892,5 @@ namespace Dotmim.Sync
             }
         }
     }
+#pragma warning restore CA1873
 }

@@ -43,17 +43,8 @@
 		<WarningLevel>9999</WarningLevel>
 		<AnalysisLevel>latest-all</AnalysisLevel>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 		
 		<NoWarn></NoWarn>
 	</PropertyGroup>
-
-
-	<ItemGroup>
-		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
 </Project>

@@ -444,12 +444,11 @@ namespace Dotmim.Sync.Web.Client
             var cookieList = tmpList.ToList();
 
             // var cookieList = response.Headers.GetValues("Set-Cookie").ToList();
-            if (cookieList != null && cookieList.Count > 0)
-            {
-                // try to parse the very first cookie
-                if (CookieHeaderValue.TryParse(cookieList[0], out var cookie))
-                    this.Cookie = cookie;
-            }
+            if (cookieList.Count <= 0) return;
+
+            // try to parse the very first cookie
+            if (CookieHeaderValue.TryParse(cookieList[0], out var cookie))
+                this.Cookie = cookie;
         }
 
         private async Task<HttpResponseMessage> SendAsync(HttpStep step, IScopeMessage message, int batchSize, CancellationToken cancellationToken)
@@ -457,7 +456,7 @@ namespace Dotmim.Sync.Web.Client
             var serializer = this.SerializerFactory.GetSerializer();
 
             var contentType = this.SerializerFactory.Key == SerializersFactory.JsonSerializerFactory.Key ? "application/json" : null;
-            var serializerInfo = new SerializerInfo(this.SerializerFactory.Key, batchSize);
+            var serializerInfo = new SerializerInfo { SerializerKey = this.SerializerFactory.Key, ClientBatchSize = batchSize }; //new SerializerInfo(this.SerializerFactory.Key, batchSize);
 
             // using json to serialize header
             var jsonSerializer = new JsonObjectSerializer();

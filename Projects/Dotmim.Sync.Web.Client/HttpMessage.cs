@@ -272,7 +272,13 @@ namespace Dotmim.Sync.Web.Client
         /// Create a new message to web remote server.
         /// Scope info table name is not provided since we do not care about it on the server side.
         /// </summary>
-        public HttpMessageEnsureScopesRequest(SyncContext context) => this.SyncContext = context ?? throw new ArgumentNullException(nameof(context));
+        internal HttpMessageEnsureScopesRequest(SyncContext context)
+            => this.SyncContext = context ?? throw new ArgumentNullException(nameof(context));
+        
+        //public HttpMessageEnsureScopesRequest(SyncContext context)
+        //    => this.SyncContext = context ?? throw new ArgumentNullException(nameof(context));
+
+        //public HttpMessageEnsureScopesRequest(SyncContext context) => this.SyncContext = context ?? throw new ArgumentNullException(nameof(context));
 
         /// <inheritdoc />
         [DataMember(Name = "sc", IsRequired = true, Order = 1)]
