@@ -16,6 +16,7 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<NoWarn>$(NoWarn)</NoWarn>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>

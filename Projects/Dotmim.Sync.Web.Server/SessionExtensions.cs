@@ -1,7 +1,6 @@
 using Dotmim.Sync.Extensions;
 using Dotmim.Sync.Serialization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Abstractions;
 
 namespace Dotmim.Sync.Web.Server
 {

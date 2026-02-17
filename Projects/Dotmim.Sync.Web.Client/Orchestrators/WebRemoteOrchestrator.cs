@@ -13,10 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if NET8_0
-using Microsoft.Net.Http.Headers;
-#endif
-
 namespace Dotmim.Sync.Web.Client
 {
     /// <summary>

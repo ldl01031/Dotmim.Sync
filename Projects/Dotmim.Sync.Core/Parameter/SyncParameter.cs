@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace Dotmim.Sync
@@ -21,19 +20,13 @@ namespace Dotmim.Sync
         /// Gets or sets the value of the parameter.
         /// </summary>
         [DataMember(Name = "v", IsRequired = true, Order = 2)]
-        public string Value { get; set; }
+        public object Value { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SyncParameter"/> class by using default values.
         /// </summary>
         public SyncParameter()
         {
-        }
-
-        internal SyncParameter(string name, string value)
-        {
-            Name = name;
-            Value = value;
         }
 
         /// <summary>
@@ -43,7 +36,7 @@ namespace Dotmim.Sync
         public SyncParameter(string name, object value)
         {
             this.Name = name;
-            this.Value = Convert.ToString(value, CultureInfo.InvariantCulture);
+            this.Value = value;
         }
 
         /// <summary>
