@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ***********************************
+// Dotmim.Sync.Core
+// SyncParameters.cs
+// Modified: 02/17/2026 (Larry Leach)
+// ***********************************
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,46 +15,61 @@ using System.Text;
 
 namespace Dotmim.Sync
 {
-    /// <summary>
-    /// Parameters used to filter rows.
-    /// </summary>
     [CollectionDataContract(Name = "params", ItemName = "param"), Serializable]
     public class SyncParameters : ICollection<SyncParameter>, IList<SyncParameter>
     {
-        private static string defaultScopeHash;
+        private static string _defaultScopeHash;
 
-        /// <summary>
-        /// Gets or Sets the InnerCollection (Exposed as Public for serialization purpose).
-        /// </summary>
-        [DataMember(Name = "c", IsRequired = true)]
-        public Collection<SyncParameter> InnerCollection { get; set; } = new Collection<SyncParameter>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SyncParameters"/> class.
-        /// Create a default collection for SerializersFactory.
-        /// </summary>
         public SyncParameters()
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SyncParameters"/> class.
-        /// </summary>
-        public SyncParameters(params (string Name, object Value)[] parameters) => this.AddRange(parameters.Select(p => new SyncParameter(p.Name, p.Value)));
+        public SyncParameters(params (string Name, object Value)[] parameters)
+        {
+            this.AddRange(parameters.Select(p => new SyncParameter(p.Name, p.Value)));
+        }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SyncParameters"/> class.
-        /// </summary>
-        public SyncParameters(params SyncParameter[] parameters) => this.AddRange(parameters);
+        public SyncParameters(params SyncParameter[] parameters)
+        {
+            this.AddRange(parameters);
+        }
 
-        /// <summary>
-        /// Add a new sync parameter.
-        /// </summary>
-        public void Add<T>(string name, T value) => this.Add(new SyncParameter(name, value));
+        [IgnoreDataMember]
+        public static string DefaultScopeHash
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_defaultScopeHash)) return _defaultScopeHash;
 
-        /// <summary>
-        /// Add a new sync parameter.
-        /// </summary>
+                var b = Encoding.UTF8.GetBytes(SyncOptions.DefaultScopeName);
+                var hash1 = HashAlgorithm.SHA256.Create(b);
+                _defaultScopeHash = Convert.ToBase64String(hash1);
+
+                return _defaultScopeHash;
+            }
+        }
+
+        [DataMember(Name = "c", IsRequired = true)]
+        public Collection<SyncParameter> InnerCollection { get; set; } = new();
+
+        public SyncParameter this[string name]
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(name))
+                    throw new ArgumentNullException(nameof(name));
+
+                return this.InnerCollection.FirstOrDefault(p =>
+                    string.Equals(p.Name, name, SyncGlobalization.DataSourceStringComparison));
+            }
+        }
+
+        public SyncParameter this[int index]
+        {
+            get => this.InnerCollection[index];
+            set => this.InnerCollection[index] = value;
+        }
+
         public void Add(SyncParameter item)
         {
             if (item == null)
@@ -60,9 +81,65 @@ namespace Dotmim.Sync
             this.InnerCollection.Add(item);
         }
 
-        /// <summary>
-        /// Add an array of parameters.
-        /// </summary>
+        public void Clear()
+        {
+            this.InnerCollection.Clear();
+        }
+
+        public int Count => this.InnerCollection.Count;
+        public bool IsReadOnly => false;
+
+        public bool Remove(SyncParameter item)
+        {
+            return this.InnerCollection.Remove(item);
+        }
+
+        public bool Contains(SyncParameter item)
+        {
+            return this.InnerCollection.Contains(item);
+        }
+
+        public void CopyTo(SyncParameter[] array, int arrayIndex)
+        {
+            this.InnerCollection.CopyTo(array, arrayIndex);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.InnerCollection.GetEnumerator();
+        }
+
+        public IEnumerator<SyncParameter> GetEnumerator()
+        {
+            return this.InnerCollection.GetEnumerator();
+        }
+
+        SyncParameter IList<SyncParameter>.this[int index]
+        {
+            get => this.InnerCollection[index];
+            set => this.InnerCollection[index] = value;
+        }
+
+        public void Insert(int index, SyncParameter item)
+        {
+            this.InnerCollection.Insert(index, item);
+        }
+
+        public int IndexOf(SyncParameter item)
+        {
+            return this.InnerCollection.IndexOf(item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            this.InnerCollection.RemoveAt(index);
+        }
+
+        public void Add<T>(string name, T value)
+        {
+            this.Add(new SyncParameter(name, value));
+        }
+
         public void AddRange(IEnumerable<SyncParameter> parameters)
         {
             if (parameters == null)
@@ -72,28 +149,11 @@ namespace Dotmim.Sync
                 this.Add(p);
         }
 
-        /// <summary>
-        /// Get a parameters by its name.
-        /// </summary>
-        public SyncParameter this[string name]
+        public bool Contains(string name)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(name))
-                    throw new ArgumentNullException(nameof(name));
-
-                return this.InnerCollection.FirstOrDefault(p => string.Equals(p.Name, name, SyncGlobalization.DataSourceStringComparison));
-            }
+            return this[name] != null;
         }
 
-        /// <summary>
-        /// Clear.
-        /// </summary>
-        public void Clear() => this.InnerCollection.Clear();
-
-        /// <summary>
-        /// Get a hash code to identify the parameters uniquely.
-        /// </summary>
         public string GetHash()
         {
             var flatParameters = string.Concat(this.OrderBy(p => p.Name).Select(p => $"{p.Name}.{p.Value}"));
@@ -103,98 +163,14 @@ namespace Dotmim.Sync
             return hash1String;
         }
 
-        /// <summary>
-        /// Gets get default hash code for the default scope.
-        /// </summary>
-        [IgnoreDataMember]
-        public static string DefaultScopeHash
+        public bool Remove(string name)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(defaultScopeHash))
-                {
-                    var b = Encoding.UTF8.GetBytes(SyncOptions.DefaultScopeName);
-                    var hash1 = HashAlgorithm.SHA256.Create(b);
-                    defaultScopeHash = Convert.ToBase64String(hash1);
-                }
-
-                return defaultScopeHash;
-            }
+            return this.InnerCollection.Remove(this[name]);
         }
 
-        /// <summary>
-        /// Gets the count of parameters.
-        /// </summary>
-        public int Count => this.InnerCollection.Count;
-
-        /// <summary>
-        /// Gets a value indicating whether gets if the collection is readonly.
-        /// </summary>
-        public bool IsReadOnly => false;
-
-        /// <summary>
-        /// Gets the index of a parameter.
-        /// </summary>
-        SyncParameter IList<SyncParameter>.this[int index] { get => this.InnerCollection[index]; set => this.InnerCollection[index] = value; }
-
-        /// <summary>
-        /// Gets the Sync parameter by its index.
-        /// </summary>
-        public SyncParameter this[int index] { get => this.InnerCollection[index]; set => this.InnerCollection[index] = value; }
-
-        /// <summary>
-        /// Insert a parameter at a specific index.
-        /// </summary>
-        public void Insert(int index, SyncParameter item) => this.InnerCollection.Insert(index, item);
-
-        /// <summary>
-        /// Remove a parameter.
-        /// </summary>
-        public bool Remove(SyncParameter item) => this.InnerCollection.Remove(item);
-
-        /// <summary>
-        /// Remove a parameter by its name.
-        /// </summary>
-        public bool Remove(string name) => this.InnerCollection.Remove(this[name]);
-
-        /// <summary>
-        /// Check if the collection contains a parameter.
-        /// </summary>
-        public bool Contains(SyncParameter item) => this.InnerCollection.Contains(item);
-
-        /// <summary>
-        /// Check if the collection contains a parameter by its name.
-        /// </summary>
-        public bool Contains(string name) => this[name] != null;
-
-        /// <summary>
-        /// Copy the parameters to an array.
-        /// </summary>
-        public void CopyTo(SyncParameter[] array, int arrayIndex) => this.InnerCollection.CopyTo(array, arrayIndex);
-
-        /// <summary>
-        /// Gets the index of a parameter.
-        /// </summary>
-        public int IndexOf(SyncParameter item) => this.InnerCollection.IndexOf(item);
-
-        /// <summary>
-        /// Remove a parameter at a specific index.
-        /// </summary>
-        public void RemoveAt(int index) => this.InnerCollection.RemoveAt(index);
-
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        IEnumerator IEnumerable.GetEnumerator() => this.InnerCollection.GetEnumerator();
-
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        public IEnumerator<SyncParameter> GetEnumerator() => this.InnerCollection.GetEnumerator();
-
-        /// <summary>
-        /// Gets the string representation of the parameters, using the count property.
-        /// </summary>
-        public override string ToString() => this.InnerCollection.Count.ToString(CultureInfo.InvariantCulture);
+        public override string ToString()
+        {
+            return this.InnerCollection.Count.ToString(CultureInfo.InvariantCulture);
+        }
     }
 }
