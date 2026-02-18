@@ -15,63 +15,61 @@ using System.Threading.Tasks;
 
 namespace Dotmim.Sync.Web.Client
 {
-    /// <summary>
-    /// Represents a web remote orchestrator able to communicate with a web server orchestrator.
-    /// </summary>
     public partial class WebRemoteOrchestrator : RemoteOrchestrator
     {
+        private static readonly TimeSpan DefaultSyncTimeout = TimeSpan.FromMinutes(20);
+        private HttpClient? _httpClient;
+
+        public HttpClient HttpClient
+        {
+            get => _httpClient ??= CreateHttpClient();
+            set
+            {
+                _httpClient = value ?? throw new ArgumentNullException(nameof(value));
+                EnsureTimeout(_httpClient);
+            }
+        }
+
+        private static void EnsureTimeout(HttpClient client)
+        {
+            // bump anything “default-ish” or clearly too small for first sync/provisioning
+            if (client.Timeout == TimeSpan.FromSeconds(100) || client.Timeout < TimeSpan.FromMinutes(5))
+                client.Timeout = DefaultSyncTimeout;
+        }
+
+        private static HttpClient CreateHttpClient()
+        {
+            var handler = new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+
+            var client = new HttpClient(handler, disposeHandler: true)
+            {
+                Timeout = DefaultSyncTimeout
+            };
+
+            return client;
+        }
         private readonly Dictionary<string, string> customHeaders = [];
         private readonly Dictionary<string, string> scopeParameters = [];
 
-        /// <summary>
-        /// Gets or Sets a custom identifier, that can be used on server side to choose the correct web server agent.
-        /// </summary>
         public string Identifier { get; set; }
 
-        /// <summary>
-        /// Gets or Sets custom converter for all rows.
-        /// </summary>
         public IConverter Converter { get; set; }
 
-        /// <summary>
-        /// Gets max threads used to get parts from server.
-        /// </summary>
         public int MaxDownladingDegreeOfParallelism { get; }
 
-        /// <summary>
-        /// Gets or Sets serializer used to serialize and deserialize rows coming from server.
-        /// </summary>
         public ISerializerFactory SerializerFactory { get; set; }
 
-        /// <summary>
-        /// Gets or Sets a custom sync policy.
-        /// </summary>
         public SyncPolicy SyncPolicy { get; set; }
 
-        /// <summary>
-        /// Gets or Sets the service uri used to reach the server api.
-        /// </summary>
         public Uri ServiceUri { get; set; }
 
-        /// <summary>
-        /// Gets or Sets the HttpClient instanced used for this web client orchestrator.
-        /// </summary>
-        public HttpClient HttpClient { get; set; }
-
-        /// <summary>
-        /// Gets ts the cookie used for this web client orchestrator.
-        /// </summary>
         public CookieHeaderValue Cookie { get; private set; }
 
-        /// <summary>
-        /// Gets service uri as a string. "undefined" if null.
-        /// </summary>
         public string GetServiceHost() => this.ServiceUri == null ? "Undefined" : this.ServiceUri.Host;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WebRemoteOrchestrator"/> class.
-        /// Gets a new web proxy orchestrator.
-        /// </summary>
         public WebRemoteOrchestrator(
         string serviceUri,
         IConverter customConverter = null,
@@ -83,10 +81,6 @@ namespace Dotmim.Sync.Web.Client
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WebRemoteOrchestrator"/> class.
-        /// Gets a new web proxy orchestrator.
-        /// </summary>
         public WebRemoteOrchestrator(
             Uri serviceUri,
             IConverter customConverter = null,
@@ -122,9 +116,6 @@ namespace Dotmim.Sync.Web.Client
             this.Identifier = identifier;
         }
 
-        /// <summary>
-        /// Try to get a header value from the response headers.
-        /// </summary>
         public static bool TryGetHeaderValue(HttpResponseHeaders n, string key, out string header)
         {
             if (n.TryGetValues(key, out var vs))
@@ -137,9 +128,6 @@ namespace Dotmim.Sync.Web.Client
             return false;
         }
 
-        /// <summary>
-        /// Read the content from a response message.
-        /// </summary>
         public static Task<string> ReadContentFromResponseAsync(HttpResponseMessage response)
         {
             return response.Content?.ReadAsStringAsync();

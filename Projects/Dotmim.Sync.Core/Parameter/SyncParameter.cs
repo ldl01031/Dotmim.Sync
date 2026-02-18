@@ -36,7 +36,7 @@ namespace Dotmim.Sync
         public SyncParameter(string name, object value)
         {
             this.Name = name;
-            this.Value = value;
+            this.Value = value?.ToString() ?? "";
         }
 
         /// <summary>
