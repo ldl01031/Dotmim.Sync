@@ -157,7 +157,7 @@ namespace Dotmim.Sync.Web.Client
             lstbpi ??= serverBatchInfo.BatchPartsInfo.OrderByDescending(bpi => bpi.Index).FirstOrDefault();
 
             // Parrallel download of all bpis except the last one (which will launch the delete directory on the server side)
-            await bpis.ForEachAsync(bpi => this.DownloadBatchPartInfoAsync(context, schema, serverBatchInfo, bpi, HttpStep.GetMoreChanges, progress, cancellationToken), this.MaxDownladingDegreeOfParallelism).ConfigureAwait(false);
+            await bpis.ForEachAsync(bpi => this.DownloadBatchPartInfoAsync(context, schema, serverBatchInfo, bpi, HttpStep.GetMoreChanges, progress, cancellationToken), this.MaxDownloadingDegreeOfParallelism).ConfigureAwait(false);
 
             // Download last batch part that will launch the server deletion of the tmp dir
             await this.DownloadBatchPartInfoAsync(context, schema, serverBatchInfo, lstbpi, HttpStep.GetMoreChanges, progress, cancellationToken).ConfigureAwait(false);
@@ -239,7 +239,7 @@ namespace Dotmim.Sync.Web.Client
             }
             else
             {
-                await SerializeAsync(response, bpi.FileName, serverBatchInfo.GetDirectoryFullPath(), this).ConfigureAwait(false);
+                await SerializeAsync(response, bpi.FileName, serverBatchInfo.GetDirectoryFullPath()).ConfigureAwait(false);
             }
 
             response.Dispose();
